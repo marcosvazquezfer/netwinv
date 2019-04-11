@@ -30,7 +30,7 @@ class ConfigurationLoader:
         COMENTAR
         '''
         
-        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib==2.0.2']
+        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib']
         
         installed_utils = get_pip_installations()
         installed_utils_list = sorted(['%s' % i.key for i in installed_utils])
@@ -44,7 +44,7 @@ class ConfigurationLoader:
                     answer = raw_input('Answer: ')
                     
                 if answer in ['y','Y']:
-                    self.__intall_util(util)
+                    self.__install_util(util)
                 else:
                     print(util + 'needs tobe installed to run the application. Execute pip install ' + util + ' and then run the script again.')
             else:

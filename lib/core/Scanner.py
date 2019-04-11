@@ -3,6 +3,7 @@ import csv
 import netifaces
 import os
 
+
 from datetime import datetime
 from lib.core.Snmpwalk import *
 
@@ -286,6 +287,8 @@ class Scanner:
                 print('>IP: ' + values[i])
                 print('')
     
+
+    
     def __output_file_name(self):
         '''
         COMENTAR
@@ -309,6 +312,9 @@ class Scanner:
 
                 os.mkdir('data/' + self.folder)
                 return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
+        else:
+            os.mkdir('data/' + self.folder)
+            return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
         
             
         
