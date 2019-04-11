@@ -120,13 +120,17 @@ resp = raw_input('Quieres ejecutar el script periodicamente? (s/n) ')
 while resp == '':
     resp = raw_input('Quieres ejecutar el script periodicamente? (s/n) ')
 
+folder_name = raw_input('Introduce el nombre del directorio donde quieres almacenar los csv de salida: ')
+while folder_name == '':
+    folder_name = raw_input('Introduce el nombre del directorio donde quieres almacenar los csv de salida: ')
+
 csv_name = raw_input('Introduce el nombre de salida del fichero csv: ')
 while csv_name == '':
     csv_name = raw_input('Introduce el nombre de salida del fichero csv: ')
 
-scanner = Scanner(ipmask,csv_name)
+scanner = Scanner(ipmask,folder_name,csv_name)
     
-if resp == 's' or resp == 'S':
+if resp in ['s','S']:
     print('')
     print('>>>>>>>>>> Empezando escaneo periodico <<<<<<<<<<')
     print('')

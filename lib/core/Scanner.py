@@ -1,6 +1,7 @@
 import nmap
 import csv
 import netifaces
+import os
 
 from datetime import datetime
 from lib.core.Snmpwalk import *
@@ -10,10 +11,11 @@ class Scanner:
     COMENTAR
     '''
     
-    def __init__(self,ip,csv):
+    def __init__(self,ip,folder,csv):
         
         self.__nmap = nmap.PortScanner()
         self.__ip = ip
+        self.__folder = folder
         self.__csv = csv
         
     @property
@@ -23,6 +25,10 @@ class Scanner:
     @property
     def ip(self):
         return self.__ip
+
+    @property
+    def folder(self):
+        return self.__folder
 
     @property
     def csv(self):
@@ -107,8 +113,11 @@ class Scanner:
                             if snmp_port_scanning['scan'][host]['udp'] != []:
                                 if snmp_port_scanning['scan'][host]['udp'][161]['state'] == 'open':
                                     snmp = Snmpwalk(['1.3.6.1.2.1.1.1.0','1.3.6.1.2.1.1.5.0','1.3.6.1.2.1.25.3.2.1.3.196609','1.3.6.1.4.1.2021.4.5.0','1.3.6.1.4.1.2021.9.1.6.1'])
-                                    snmp_results = snmp.get(host,hlapi.CommunityData('public'))
-                                    snmp_information = snmp_results.values()
+                                    try:
+                                        snmp_results = snmp.get(host,hlapi.CommunityData('public'))
+                                        snmp_information = snmp_results.values()
+                                    except RuntimeError:
+                                        pass
                                     
                 for key in os_scanning_keys:
                     if host == key:
@@ -281,10 +290,25 @@ class Scanner:
         '''
         COMENTAR
         '''
-        
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        
-        return 'data/Outputs/' + self.csv + '_' + current_datetime + '.csv'
+        directories = os.listdir('data/')
+
+        if self.folder in directories:
+            op = raw_input('La carpeta ya existe, quieres utilizarla? (s/n): ')
+            while op == '':
+                op = raw_input('La carpeta ya existe, quieres utilizarla? (s/n): ')
+            print('')
+
+            if op in ['s','S']:
+                return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
+            else:
+                self.folder = raw_input('Introduce el nombre del nuevo directorio donde quieres almacenar los csv de salida: ')
+                while self.folder == '':
+                    self.folder = raw_input('Introduce el nombre del nuevo directorio donde quieres almacenar los csv de salida: ')
+                print('')
+
+                os.mkdir('data/' + self.folder)
+                return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
         
             
         
