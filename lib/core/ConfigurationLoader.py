@@ -17,7 +17,7 @@ class ConfigurationLoader:
         COMENTAR
         '''
         
-        utils = ['nmap']
+        utils = ['nmap','python-tk']
         
         for util in utils:
             if spawn.find_executable(util) is None:
@@ -30,7 +30,7 @@ class ConfigurationLoader:
         COMENTAR
         '''
         
-        pip_utils = ['python-nmap','pysnmp','netifaces','schedule']
+        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib==2.0.2']
         
         installed_utils = get_pip_installations()
         installed_utils_list = sorted(['%s' % i.key for i in installed_utils])
