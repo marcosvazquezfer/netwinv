@@ -118,4 +118,8 @@ def getIpMascByInterface():
         netIpDec = str(int(str(netIpBin[0:8]),2)) + '.' + str(int(str(netIpBin[8:16]),2)) + '.' + str(int(str(netIpBin[16:24]),2)) + '.' + str(int(str(netIpBin[24:32]),2))
         ipMask = netIpDec + '/' + str(maskDec)
 
-    return ipMask
+    return [ipMask,interfaces[interface]]
+
+def getLocalIpByInterface(interf):
+
+    return netifaces.ifaddresses(interf)[netifaces.AF_INET][0]['addr']

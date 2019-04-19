@@ -105,7 +105,9 @@ banner()
 #print(banner)
 
 #interface = selectInterface()
-ipmask = getIpMascByInterface()
+ipmask_interface = getIpMascByInterface()
+ipmask = ipmask_interface[0]
+interface = ipmask_interface[1]
 
 print("Dir de red asignada a la interfaz elegida: " + ipmask)
 '''
@@ -128,7 +130,7 @@ csv_name = raw_input('Introduce el nombre de salida del fichero csv: ')
 while csv_name == '':
     csv_name = raw_input('Introduce el nombre de salida del fichero csv: ')
 
-scanner = Scanner(ipmask,folder_name,csv_name)
+scanner = Scanner(ipmask,interface,folder_name,csv_name)
     
 if resp in ['s','S']:
     print('')

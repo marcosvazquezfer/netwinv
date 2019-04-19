@@ -2,20 +2,26 @@ import nmap
 import csv
 import netifaces
 import os
-
+import socket
+import pandas as pd
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
 
 from datetime import datetime
 from lib.core.Snmpwalk import *
+from lib.helpers.ip_helper import *
 
 class Scanner:
     '''
     COMENTAR
     '''
     
-    def __init__(self,ip,folder,csv):
+    def __init__(self,ip,interface,folder,csv):
         
         self.__nmap = nmap.PortScanner()
         self.__ip = ip
+        self.__interface = interface
         self.__folder = folder
         self.__csv = csv
         
@@ -26,6 +32,10 @@ class Scanner:
     @property
     def ip(self):
         return self.__ip
+    
+    @property
+    def interface(self):
+        return self.__interface
 
     @property
     def folder(self):
@@ -260,6 +270,7 @@ class Scanner:
                 output_file.writerow([host,toret[host]['MAC'],toret[host]['nombre'],toret[host]['SO'],toret[host]['procesador'],toret[host]['ram'],toret[host]['disco']])
         
         self.__build_mac_ips(toret)
+        self.__build_graph(toret)
     
     def __build_mac_ips(self,dic):
         
@@ -287,8 +298,52 @@ class Scanner:
                 print('>IP: ' + values[i])
                 print('')
     
+    def __build_graph(self,dic):
+        '''
+        COMENTAR
+        '''
+        local_ip = getLocalIpByInterface(self.interface)
+        
+        dic_keys = dic.keys()
 
-    
+        ips_list = []
+        local_ip_list = []
+
+        for key in dic_keys:
+            if(key != local_ip):
+                ips_list.append(key)
+
+        for i in range(len(ips_list)):
+            local_ip_list.append(local_ip)
+
+        # Build a dataframe with your connections
+        # df = pd.DataFrame({ 'from':local_ip_list, 'to':ips_list})
+        # df
+        
+        # # Build your graph
+        # G=nx.from_pandas_edgelist(df, 'from', 'to', create_using=nx.Graph() )
+        G = nx.Graph()
+        
+        # # Custom the nodes:
+        fig = plt.figure(figsize=(10,10))
+        #nx.draw(G, with_labels=True, node_color='skyblue', node_size=1500, edge_color='black')
+        G.add_node('localhost')
+        G.add_nodes_from(ips_list)
+        for ip in ips_list:
+            G.add_edge('localhost',ip,weight=1,length=2)
+
+        pos = nx.spring_layout(G)
+
+        nx.draw_networkx_nodes(G,pos,node_size=1200,node_shape='o',node_color='skyblue')
+        nx.draw_networkx_edges(G,pos,width=2,edge_color='black')
+        nx.draw_networkx_labels(G,pos)
+
+        plt.axis('off')
+
+        #nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=1500, edge_color='black')
+        current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        plt.savefig('data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.png', bbox_inches="tight", pad_inches=0.5)
+
     def __output_file_name(self):
         '''
         COMENTAR
