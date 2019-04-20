@@ -21,7 +21,7 @@ class ConfigurationLoader:
         
         for util in utils:
             if spawn.find_executable(util) is None:
-                print('ATENTION! ' + util + 'is not installed on your operating system. You need to install it and then run the application again')
+                print('ATENTION! ' + util + ' is not installed on your operating system. You need to install it and then run the application again')
             else:
                 print(util + ' is installed')
                 

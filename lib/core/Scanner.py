@@ -13,17 +13,33 @@ from lib.core.Snmpwalk import *
 from lib.helpers.ip_helper import *
 
 class Scanner:
-    '''
-    COMENTAR
-    '''
+    """
+    This class is an implementation of a nmap scanner and file exporter.
+
+    It is the responsible for executing a scan in the indicated network trying to identify alive IPs, 
+    MAC network, operating system, name associated with the IP, processor, total siza of RAM and
+    total size of disk.
     
-    def __init__(self,ip,interface,folder,csv):
+    When the scan finishes, the class creates a file_name output file and a png image which tries to represent
+    the network, exporting them to the indicated output directory.
+
+        :param ip: The IP of the network that must be scanned.
+        :param interface: The network interface associated with the IP.
+        :param folder_name: The name of the directory where output files must be stored.
+        :param file_name: The name of the output files.
+        :type ip: str
+        :type interface: str
+        :type folder_name: str
+        :type file_name: str
+    """
+    
+    def __init__(self,ip,interface,folder_name,file_name):
         
         self.__nmap = nmap.PortScanner()
         self.__ip = ip
         self.__interface = interface
-        self.__folder = folder
-        self.__csv = csv
+        self.__folder_name = folder_name
+        self.__file_name = file_name
         
     @property
     def nmap(self):
@@ -38,17 +54,20 @@ class Scanner:
         return self.__interface
 
     @property
-    def folder(self):
-        return self.__folder
+    def folder_name(self):
+        return self.__folder_name
 
     @property
-    def csv(self):
-        return self.__csv
+    def file_name(self):
+        return self.__file_name
     
     def __ping_scanning(self):
-        '''
-        COMENTAR
-        '''
+        """
+        Return a list containing the information extracted with nmap of each active IPs and 
+        a list with active IPs.
+
+        It perfoms a scan with ping.
+        """
         
         active_ips = self.nmap.scan(self.ip,arguments="-sP")
         
@@ -57,9 +76,12 @@ class Scanner:
         return [active_ips,hosts]
     
     def __no_ping_scanning(self):
-        '''
-        COMENTAR
-        '''
+        """
+        Return a list containing the information extracted with nmap of each active IPs and 
+        a list with active IPs.
+
+        It perfoms a scan without ping.
+        """
         
         active_ips = self.nmap.scan(self.ip,arguments="-T4 -Pn")
         
@@ -68,9 +90,15 @@ class Scanner:
         return [active_ips,hosts]
     
     def __snmp_port_scanning(self,host):
-        '''
-        COMENTAR
-        '''
+        """
+        Returns a list containing the snmp information extracted with nmap of the port UDP 161 associated 
+        to the indicated IP and a list with the snmp scanning keys.
+
+            :param host: The IP to scanning port UDP 161.
+            :type host: str
+            :return: list containing snmp information and snmp scanning keys
+            :rtype: list
+        """
         
         snmp_scanning = self.nmap.scan(host, arguments="-sU -p 161")
         snmp_scanning_keys = snmp_scanning['scan'].keys()
@@ -78,25 +106,35 @@ class Scanner:
         return[snmp_scanning,snmp_scanning_keys]
     
     def __os_scanning(self,host):
-        '''
-        COMENTAR
-        '''
+        """
+        Returns a list containing the operating system information extracted with nmap of the indicated IP 
+        and a list with the operating system scanning keys.
+
+            :param host: The IP to perfom operating system scanning.
+            :type host: str
+            :return: list containing operating system information and operating system scanning keys
+            :rtype: list
+        """
         
         scanning = self.nmap.scan(host,arguments="-O")
         os_scanning_keys = scanning['scan'].keys()
         
         return [scanning,os_scanning_keys]
     
-    def scan(self,type):
-        '''
-        COMENTAR
-        '''
+    def scan(self,scan_type):
+        """
+        Perfom the scan of the indicated network doing all needed scans. All the obtain information will
+        be printed in the terminal.
+
+            :param scan_type: The type of scanning required: ping or no-ping
+            :type scan_type: str
+        """
         
         csv_name = self.__output_file_name()
         output_file = csv.writer(open(csv_name,'wb'))
         toret = {}
         
-        if type == 'ping':
+        if scan_type == 'ping':
             ping_scanning = self.__ping_scanning()
             active_ips = ping_scanning[0]
             hosts = ping_scanning[1]
@@ -273,6 +311,9 @@ class Scanner:
         self.__build_graph(toret)
     
     def __build_mac_ips(self,dic):
+        """
+        COMENTAR
+        """
         
         dic_keys = dic.keys()
         mac_ips = {}
@@ -299,9 +340,9 @@ class Scanner:
                 print('')
     
     def __build_graph(self,dic):
-        '''
+        """
         COMENTAR
-        '''
+        """
         local_ip = getLocalIpByInterface(self.interface)
         
         dic_keys = dic.keys()
@@ -339,37 +380,18 @@ class Scanner:
         nx.draw_networkx_labels(G,pos)
 
         plt.axis('off')
+        plt.margins(0.1)
 
         #nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=1500, edge_color='black')
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        plt.savefig('data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.png', bbox_inches="tight", pad_inches=0.5)
+        plt.savefig('data/' + self.folder_name + '/' + self.file_name + '_' + current_datetime + '.png')
 
     def __output_file_name(self):
-        '''
+        """
         COMENTAR
-        '''
+        """
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        directories = os.listdir('data/')
 
-        if self.folder in directories:
-            op = raw_input('La carpeta ya existe, quieres utilizarla? (s/n): ')
-            while op == '':
-                op = raw_input('La carpeta ya existe, quieres utilizarla? (s/n): ')
-            print('')
-
-            if op in ['s','S']:
-                return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
-            else:
-                self.folder = raw_input('Introduce el nombre del nuevo directorio donde quieres almacenar los csv de salida: ')
-                while self.folder == '':
-                    self.folder = raw_input('Introduce el nombre del nuevo directorio donde quieres almacenar los csv de salida: ')
-                print('')
-
-                os.mkdir('data/' + self.folder)
-                return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
-        else:
-            os.mkdir('data/' + self.folder)
-            return 'data/' + self.folder + '/' + self.csv + '_' + current_datetime + '.csv'
-        
+        return 'data/' + self.folder_name + '/' + self.file_name + '_' + current_datetime + '.csv'
             
         
