@@ -25,10 +25,10 @@ def selectInterface():
 
         print(str(i+1) + ") " + interfaces[i])
 
-    resp = int(raw_input("Opcion elegida: "))
+    resp = int(raw_input("Chosen option: "))
     resp -= 1
 
-    print("Has elegido: " + interfaces[resp])
+    print("You have chosen: " + interfaces[resp])
 
     return resp
 
