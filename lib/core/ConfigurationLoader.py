@@ -17,7 +17,7 @@ class ConfigurationLoader:
         COMENTAR
         '''
         
-        utils = ['nmap','python-tk']
+        utils = ['nmap']
         
         for util in utils:
             if spawn.find_executable(util) is None:

@@ -1,14 +1,9 @@
 #Importar librerias
-import nmap
-import csv
-import netifaces
 import sys
 import schedule
 import time
-#import pyfiglet
 
 #Importar modulos de terceros
-from pysnmp import hlapi
 from datetime import datetime
 
 #Importar modulos propios
@@ -69,13 +64,6 @@ def main():
 
     banner()
 
-    ipmask_interface = getIpMascByInterface()
-    ipmask = ipmask_interface[0]
-    interface = ipmask_interface[1]
-    
-    print("Network IP assign to the chosen interface: " + ipmask)
-    print('')
-
     print('What do you want to do?')
     print('')
     print('1) Run the script periodically')
@@ -87,6 +75,13 @@ def main():
         op = raw_input('Enter your option: ')
 
     if op == '1':
+        ipmask_interface = getIpMascByInterface()
+        ipmask = ipmask_interface[0]
+        interface = ipmask_interface[1]
+        
+        print("Network IP assign to the chosen interface: " + ipmask)
+        print('')
+
         directory_name = raw_input('Enter the name of the directory where you want to store output files: ')
         while directory_name == '':
             directory_name = raw_input('Enter the name of the directory where you want to store output files: ')
@@ -124,15 +119,21 @@ def main():
         print('>>>>>>>>>> Starting periodic scanning <<<<<<<<<<')
         print('')
 
-        cont = 0
-        scanner.periodic_scan(times,cont)
-        schedule.every(5).minutes.do(scanner.periodic_scan,times,cont+1)
+        scanner.periodic_scan(times)
+        schedule.every(interval).minutes.do(scanner.periodic_scan,times)
         
         while True:
             schedule.run_pending()
             time.sleep(1)
 
     elif op == '2':
+        ipmask_interface = getIpMascByInterface()
+        ipmask = ipmask_interface[0]
+        interface = ipmask_interface[1]
+        
+        print("Network IP assign to the chosen interface: " + ipmask)
+        print('')
+
         directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
         while directory_name == '':
             directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
@@ -148,7 +149,7 @@ def main():
         print('')
         print('>>>>>>>>>> Starting scanning <<<<<<<<<<')
         print('')
-        scanner.scan('ping')
+        scanner.scan()
     else:
         directory_name = raw_input('Insert the name of the folder where csv file is stored: ')
         while directory_name == '':
@@ -161,7 +162,7 @@ def main():
             file_name = raw_input('Insert the name of the csv file: ')
 
         #Creates the Scanner with the indicated arguments by the user
-        scanner = Scanner(ipmask,interface,folder_name,file_name)
+        scanner = Scanner('127.0.0.0/8','lo',folder_name,file_name)
         print('')
         print('>>>>>>>>>> Building Network Graph <<<<<<<<<<')
         print('')
