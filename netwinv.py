@@ -110,7 +110,7 @@ def main():
             times = raw_input('Enter the number of times that you want to run the script: ')
             times = int(times)
 
-        current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         output_file_name = output_files_name + '_' + current_datetime
         
         #Creates the Scanner with the indicated arguments by the user

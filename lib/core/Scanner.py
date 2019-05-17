@@ -42,7 +42,7 @@ class Scanner:
         self.__interface = interface
         self.__folder_name = folder_name
         self.__file_name = file_name
-        self.__start_time = None
+        self.__start_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         self.__cont_times = 0
         
     @property
@@ -165,6 +165,7 @@ class Scanner:
                                 try:
                                     snmp_results = snmp.get(host,hlapi.CommunityData('public'))
                                     snmp_information = snmp_results.values()
+                                    
                                 except RuntimeError:
                                     pass
                                 
@@ -227,8 +228,13 @@ class Scanner:
 
         print('')
         print('Scan has finished')
-        print('Required time: ' + str(required_time.days) + ' days ' + str(hours) + ' hours ' + str(minutes) + ' minutes ')
-        print('Alive IPs: ' + str(len(toret.keys())))
+        print('')
+        print('*************** SCAN RESULTS ****************')
+        print('**                                         **')
+        print('** Required time: ' + str(required_time.days) + ' days ' + str(hours) + ' hours ' + str(minutes) + ' minutes **')
+        print('** Alive IPs: ' + str(len(toret.keys())) + '                            **')
+        print('**                                         **')
+        print('*********************************************')
 
     def periodic_scan(self,times):
         """
@@ -387,58 +393,7 @@ class Scanner:
                         print("\n")
                     
                         output_file.writerow([host,toret[host]['MAC'],toret[host]['name'],toret[host]['OS'],toret[host]['processor'],toret[host]['ram'],toret[host]['disk']])
-                    elif host not in csv_info_keys:
-                        snmp_information = []
-                        snmp_scanning = self.__snmp_port_scanning(host)
-                        snmp_port_scanning = snmp_scanning[0]
-                        snmp_port_scanning_keys = snmp_scanning[1]
-
-                        for key in snmp_port_scanning_keys:
-                            if host == key:
-                                if snmp_port_scanning['scan'][host] != []:
-                                    if snmp_port_scanning['scan'][host]['udp'] != []:
-                                        if snmp_port_scanning['scan'][host]['udp'][161]['state'] == 'open':
-                                            snmp = Snmpwalk(['1.3.6.1.2.1.1.1.0','1.3.6.1.2.1.1.5.0','1.3.6.1.2.1.25.3.2.1.3.196609','1.3.6.1.4.1.2021.4.5.0','1.3.6.1.4.1.2021.9.1.6.1'])
-                                            try:
-                                                snmp_results = snmp.get(host,hlapi.CommunityData('public'))
-                                                snmp_information = snmp_results.values()
-                                            except RuntimeError:
-                                                pass
-                            
-                        if snmp_information == []:
-                            if active_ips['scan'][host]['hostnames'][0]['name'] == '':
-                                toret[host] = {'name':'Unknown','MAC':mac,'OS':so,'processor':'Unknown','ram':'Unknown','disk':'Unknown'}
-                            else:
-                                toret[host] = {'name':active_ips['scan'][host]['hostnames'][0]['name'],'MAC':mac,'OS':so,'processor':'Unknown','ram':'Unknown','disk':'Unknown'}
-                        else:
-                            so = snmp_information[4].split(' ')
-                            soF = so[0] + ' ' + so[2]
-
-                            processor = snmp_information[3].split(' ')
-                            procesadorF = processor[1] + ' ' + processor[2]
-                            
-                            ram_kb = float(snmp_information[0])
-                            ram_gb = ram_kb/(1024*1024)
-                            ram_gb = "{0:.3f}".format(ram_gb)
-
-                            disco_kb = float(snmp_information[2])
-                            disco_gb = disco_kb/(1024*1024)
-                            disco_gb = "{0:.3f}".format(disco_gb)
-
-                            toret[host] = {'name':snmp_information[1],'MAC':mac,'OS':soF,'processor':procesadorF,'ram':ram_gb,'disk':disco_gb}
-                        
-                        print("/********************** HOST " + host + " **********************/\n")
-                        print(">Nombre: " + toret[host]['name'])
-                        print('>MAC: ' + toret[host]['MAC'])
-                        print(">S.O.: " + toret[host]['OS'])
-                        print(">Procesador: " + toret[host]['processor'])
-                        print(">Tamanho total RAM (GB): " + toret[host]['ram'])
-                        print(">Tamanho total disco (GB): " + toret[host]['disk'])
-                        print("\n")
-                    
-                        output_file.writerow([host,toret[host]['MAC'],toret[host]['name'],toret[host]['OS'],toret[host]['processor'],toret[host]['ram'],toret[host]['disk']])
-                        
-                    print('')
+                
                 output.close()
                 #mac_ips = self.__build_mac_ips(toret)
             else:
@@ -558,8 +513,11 @@ class Scanner:
 
                 print('')
                 print('Periodic scan has finished')
-                print('Required time: ' + str(required_time.days) + ' days ' + str(hours) + ' hours ' + str(minutes) + ' minutes ')
-                print('Alive IPs: ' + str(len(info_keys)))
+                print('')
+                print('******** PERIODIC SCAN RESULTS ********')
+                print('**** Required time: ' + str(required_time.days) + ' days ' + str(hours) + ' hours ' + str(minutes) + ' minutes ****')
+                print('**** Alive IPs: ' + str(len(info_keys)) + ' ****')
+                print('***************************************')
                 sys.exit()
         else:
             print('TERMINE')
@@ -572,6 +530,8 @@ class Scanner:
 
             :param dic: A dictionary that contains IPs as keys with their information.
             :type dic: dict
+            :return: A dictionary which contains all IPs grouped by MAC
+            :rtype: dict
         """
         
         dic_keys = dic.keys()
@@ -641,7 +601,7 @@ class Scanner:
         G = nx.Graph()
         
         #Custom the nodes:
-        fig = plt.figure(figsize=(10,10))
+        fig = plt.figure(figsize=(20,20))
         G.add_node('localhost')
         G.add_nodes_from(macs)
         for mac in macs:
@@ -705,7 +665,7 @@ class Scanner:
         #plt.legend(loc=1,numpoints=1,borderpad=2,labelspacing=2.5)
         plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1),ncol=columns)
 
-        current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         #plt.savefig('data/' + self.folder_name + '/' + self.file_name + '_' + current_datetime + '.png')
         plt.savefig('data/' + self.folder_name + '/' + self.file_name + '_' + current_datetime + '.png',bbox_inches="tight")
 
@@ -720,7 +680,8 @@ class Scanner:
         if os.path.isfile(csv_name):
             csv_info = read_csv(csv_name)
             
-            self.__build_mac_ips(csv_info)
+            mac_ips = self.__build_mac_ips(csv_info)
+            self.__build_graph(mac_ips)
         else:
             print('File does not exist!')
             print('')
@@ -735,7 +696,7 @@ class Scanner:
         """
 
         #Gets the current datetime from de system
-        current_datetime = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         return 'data/' + self.folder_name + '/' + self.file_name + '_' + current_datetime + '.csv'
             
