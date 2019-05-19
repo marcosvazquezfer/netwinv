@@ -711,7 +711,7 @@ class Scanner:
         G = nx.Graph()
         
         # Change the size of the png image
-        fig = plt.figure(figsize=(20,20))
+        fig = plt.figure(figsize=(30,30))
 
         # Adds nodes and edges between nodes
         G.add_node('localhost')
@@ -839,6 +839,10 @@ class Scanner:
             mac_ips = self.__build_mac_ips(csv_info)
             #Build network graph
             self.__build_graph(mac_ips)
+
+            print('')
+            print('-------> The construction of the graph has finished <--------')
+            print('')
         else:
             print('File does not exist!')
             print('')
