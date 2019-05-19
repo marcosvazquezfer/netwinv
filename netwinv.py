@@ -48,20 +48,30 @@ def main():
     main routine which must be executed.
     """
 
+    # Check if the application is being executed like root user
     if not check_root_mode():
-        print("You need to run the script like root user")
+        print('ATENTION: You must run the script like root user!')
         sys.exit(1)
 
     loader = ConfigurationLoader()
 
+    # Check if all O.S. utils are installed
+    print('Checking O.S. utils...')
+    print('')
     loader.check_os_utils()
     print('All os utils required are installed')
+    print('')
 
+    # Check if all pip utils are installed
+    print('Checking pip utils...')
+    print('')
     loader.check_pip_utils()
     print('All pip utils required are installed')
+    print('')
 
     print('APPLICATION LOADED SUCCESSFULLY')
 
+    # Show the application banner
     banner()
 
     print('What do you want to do?')
@@ -70,44 +80,57 @@ def main():
     print('2) Run the script only once')
     print('3) Build a graph from csv file')
     print('')
+
     op = raw_input('Insert your option: ')
     while op == '' or op not in ['1','2','3']:
-        op = raw_input('Enter your option: ')
+        op = raw_input('Insert your option: ')
+    print('')
 
     if op == '1':
+        # Gets the network IP with its mask and the associated interface
         ipmask_interface = getIpMascByInterface()
         ipmask = ipmask_interface[0]
         interface = ipmask_interface[1]
         
-        print("Network IP assign to the chosen interface: " + ipmask)
+        print('')
+        print('Network IP assign to the chosen interface: '
+         + ipmask)
+        print('')
         print('')
 
-        directory_name = raw_input('Enter the name of the directory where you want to store output files: ')
+        directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
         while directory_name == '':
-            directory_name = raw_input('Enter the name of the directory where you want to store output files: ')
+            directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
         
         folder_name = periodic_scan_check_folder(directory_name)
 
-        output_files_name = raw_input('Enter the name of output files: ')
+        print('')
+
+        output_files_name = raw_input('Insert the name of output files: ')
         while output_files_name == '':
-            output_files_name = raw_input('Enter the name of output files: ')
+            output_files_name = raw_input('Insert the name of output files: ')
+
+        print('')
+        print('')
 
         interval = raw_input('How often do you want to run the script? (Minutes): ')
         try:
             interval = int(interval)
         except ValueError:
-            print "ATENTION! You must to enter an integer."
+            print('ATENTION! You must to insert an integer.')
         while type(interval) != int:
             interval = raw_input('How often do you want to run the script? (Minutes): ')
             interval = int(interval)
 
-        times = raw_input('Enter the number of times that you want to run the script: ')
+        print('')
+
+        times = raw_input('Insert the number of times that you want to run the script: ')
         try:
             times = int(times)
         except ValueError:
-            print "ATENTION! You must to enter an integer."
+            print('ATENTION! You must to insert an integer.')
         while type(times) != int:
-            times = raw_input('Enter the number of times that you want to run the script: ')
+            times = raw_input('Insert the number of times that you want to run the script: ')
             times = int(times)
 
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -127,11 +150,14 @@ def main():
             time.sleep(1)
 
     elif op == '2':
+        # Gets the network IP with its mask and the associated interface
         ipmask_interface = getIpMascByInterface()
         ipmask = ipmask_interface[0]
         interface = ipmask_interface[1]
         
-        print("Network IP assign to the chosen interface: " + ipmask)
+        print('')
+        print('Network IP assign to the chosen interface: ' + ipmask)
+        print('')
         print('')
 
         directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
@@ -140,9 +166,13 @@ def main():
         
         folder_name = no_periodic_scan_check_folder(directory_name)
 
+        print('')
+
         output_files_name = raw_input('Insert the name of output files: ')
         while output_files_name == '':
             output_files_name = raw_input('Insert the name of output files: ')
+
+        print('')
 
         #Creates the Scanner with the indicated arguments by the user
         scanner = Scanner(ipmask,interface,folder_name,output_files_name)
@@ -151,11 +181,15 @@ def main():
         print('')
         scanner.scan()
     else:
+        print('')
+
         directory_name = raw_input('Insert the name of the folder where csv file is stored: ')
         while directory_name == '':
             directory_name = raw_input('Insert the name of the folder where csv file is stored: ')
 
         folder_name = check_if_folder_exists(directory_name)
+
+        print('')
 
         file_name = raw_input('Insert the name of the csv file: ')
         while file_name == '':

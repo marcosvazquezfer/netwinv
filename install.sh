@@ -1,6 +1,5 @@
 !/bin/bash
-sudo apt-get install python-pip nmap 
-sudo apt-get install python-tk
+sudo apt-get install python-pip nmap
 sudo pip install python-nmap 
 sudo pip install netifaces 
 sudo pip install pysnmp
