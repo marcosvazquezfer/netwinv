@@ -1,16 +1,14 @@
 import nmap
 import csv
-import os
 import os.path
 import sys
-import pandas as pd
-import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
 from datetime import datetime
 
 from lib.core.Snmpwalk import *
+from lib.core.PDFWriter import *
 from lib.helpers.ip_helper import *
 from lib.helpers.csv_helper import *
 
@@ -235,15 +233,36 @@ class Scanner:
 
         # Close csv file
         output.close()
+        print('========> CSV file built and closed')
+        print('')
 
         # Gets csv information
         info = read_csv(csv_name)
         # Groups IPs by its MAC direction
         mac_ips = self.__build_mac_ips(info)
+
         # Build network graph
         self.__build_graph(mac_ips)
+        print('')
+        print('========> Network graph created correctly')
+        print('')
         # Builds pdf output file
-        
+        writer = PDFWriter(lang='esp',output_directory=self.folder_name)
+        mac_ips_keys = mac_ips.keys()
+
+        for mac in mac_ips_keys:
+            ip_keys = mac_ips[mac]['IP'].keys()
+            writer.append_info(
+                {'Direccion MAC':mac},
+                [[ip,info[ip]['name'],so,info[ip]['processor'],info[ip]['ram'],info[ip]['disk']] for ip in ip_keys for so in mac_ips[mac]['IP'][ip]],
+                ['IP','Nombre','Sistema Operativo','Procesador','Memoria RAM (GB)','Espacio alamacenamiento disco (GB)'],
+                [3, 2.5, 4, 3, 4, 4]
+            )
+        writer.write_document()
+
+        print('========> PDF file created correctly')
+        print('')
+
         # Takes the time when the scan began and the time when it finished. Then calculate the days, 
         # hours, minutes and seconds that the scan lasted.
         start = self.start_time
@@ -595,6 +614,8 @@ class Scanner:
                 
                 #Close the csv file
                 output.close()
+                print('========> CSV file built and closed')
+                print('')
             
             self.cont_times = self.cont_times + 1
             # If the number of times that scan has to be executed is reached, calculate periodic scan results
@@ -605,9 +626,29 @@ class Scanner:
 
                 # Groups IPs by its MAC direction
                 mac_ips = self.__build_mac_ips(info)
+
                 # Builds network graph
                 self.__build_graph(mac_ips)
-                # Builds pdf file
+                print('')
+                print('========> Network graph created correctly')
+                print('')
+
+                # Builds pdf output file
+                writer = PDFWriter(lang='esp',output_directory=self.folder_name)
+                mac_ips_keys = mac_ips.keys()
+
+                for mac in mac_ips_keys:
+                    ip_keys = mac_ips[mac]['IP'].keys()
+                    writer.append_info(
+                        {'Direccion MAC':mac},
+                        [[ip,info[ip]['name'],so,info[ip]['processor'],info[ip]['ram'],info[ip]['disk']] for ip in ip_keys for so in mac_ips[mac]['IP'][ip]],
+                        ['IP','Nombre','Sistema Operativo','Procesador','Memoria RAM (GB)','Espacio alamacenamiento disco (GB)'],
+                        [3, 2.5, 4, 3, 4, 4]
+                    )
+                writer.write_document()
+
+                print('========> PDF file created correctly')
+                print('')
 
                 # Takes the time when the scan began and the time when it finished. Then calculate the days, 
                 # hours, minutes and seconds that the scan lasted.

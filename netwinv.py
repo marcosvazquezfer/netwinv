@@ -88,13 +88,23 @@ def main():
 
     if op == '1':
         # Gets the network IP with its mask and the associated interface
+        print('Choose the interface that has the IP belonging to the network which you want to analyze')
+        print('')
         ipmask_interface = getIpMascByInterface()
         ipmask = ipmask_interface[0]
         interface = ipmask_interface[1]
+
+        while ipmask == '':
+            print('')
+            print('ATENTION: The chosen interface has not IP assigned.')
+            print('Choose a new one.')
+            print('')
+            ipmask_interface = getIpMascByInterface()
+            ipmask = ipmask_interface[0]
+            interface = ipmask_interface[1]
         
         print('')
-        print('Network IP assign to the chosen interface: '
-         + ipmask)
+        print('Network IP assign to the chosen interface: ' + ipmask)
         print('')
         print('')
 
@@ -151,9 +161,20 @@ def main():
 
     elif op == '2':
         # Gets the network IP with its mask and the associated interface
+        print('Choose the interface that has the IP belonging to the network which you want to analyze')
+        print('')
         ipmask_interface = getIpMascByInterface()
         ipmask = ipmask_interface[0]
         interface = ipmask_interface[1]
+
+        while ipmask == '':
+            print('')
+            print('ATENTION: The chosen interface has not IP assigned.')
+            print('Choose a new one.')
+            print('')
+            ipmask_interface = getIpMascByInterface()
+            ipmask = ipmask_interface[0]
+            interface = ipmask_interface[1]
         
         print('')
         print('Network IP assign to the chosen interface: ' + ipmask)

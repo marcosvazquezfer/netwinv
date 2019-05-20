@@ -2,6 +2,9 @@ import os
 import sys
 import subprocess as s
 
+from lib.helpers.colors import *
+
+
 def permissions_error(err):
     """ Checks if an error is caused by lack of user permissions.
 
@@ -12,7 +15,7 @@ def permissions_error(err):
         :rtype: bool
     """
 
-    if 'permitted' in err or 'permissions' in err:
+    if ('permitted' in err or 'permissions' in err) and 'DEPRECATION' not in err:
         return True
     return False
 
@@ -93,13 +96,15 @@ def install_module(pkg):
         :type pkg: str
     """
 
-    mod_install = s.Popen(['pip', 'install', 'packages/' + pkg], stderr=s.PIPE)
-    errors = mod_install.communicate()
+    with open('/dev/null') as null_file:
+        mod_install = s.Popen(['pip', 'install', 'packages/' + pkg], stderr=s.PIPE, stdout=null_file)
+    _, errors = mod_install.communicate()
     # If errors when installing module
     if len(errors):
         if permissions_error(errors):
             halt_fail('Popped error about permissions, try executing "sudo python offline_install.py"')
-        halt_fail('Could not install module from {}. STDERR says:\n{}'.format(pkg, errors))
+        if 'DEPRECATION' not in errors:
+            halt_fail('Could not install module from {}. STDERR says:\n{}'.format(pkg, errors))
 
     print_success('Successfully installed module from {}'.format(pkg))
 
@@ -113,15 +118,19 @@ def main():
     pkg_dir = './packages'
 
     try:
-        s.check_call('nmap -h')
+        with open('/dev/null', 'w') as null_file:
+            s.check_call(['nmap',  '-h'], stdout=null_file)
+        print_success('Nmap found on the system.')
     except s.CalledProcessError:
         print_fail('Nmap not found on the system, attempting installation...')
         install_nmap()
 
     # Check if pip is installed
     try:
-        s.check_call('pip -h')
+        with open('/dev/null', 'w') as null_file:
+            s.check_call(['pip', '-h'], stdout=null_file)
         has_pip = True
+        print_success('pip found on the system.')
     except s.CalledProcessError:
         print_fail('pip is not installed in the system. Executing get-pip.py...')
 

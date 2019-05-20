@@ -1,4 +1,3 @@
-import argparse
 import pip
 
 from distutils import spawn
@@ -33,7 +32,7 @@ class ConfigurationLoader:
         """
         
         # Needed pip utils
-        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib']
+        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib','reportlab']
         
         # Gets the installed utils
         installed_utils = get_pip_installations()
