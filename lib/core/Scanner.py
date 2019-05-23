@@ -614,12 +614,13 @@ class Scanner:
                 
                 #Close the csv file
                 output.close()
-                print('========> CSV file built and closed')
-                print('')
             
             self.cont_times = self.cont_times + 1
             # If the number of times that scan has to be executed is reached, calculate periodic scan results
             if self.cont_times == times:
+                print('========> CSV file built and closed')
+                print('')
+                
                 #Gets csv information
                 info = read_csv(csv_name)
                 info_keys = info.keys()
