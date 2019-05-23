@@ -10,3 +10,4 @@ sudo pip install schedule
 sudo pip install networkx==2.2
 sudo pip install matplotlib==2.0.2
 sudo pip install reportlab
+sudo pip install configparser==3.7.3

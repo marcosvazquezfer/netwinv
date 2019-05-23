@@ -13,10 +13,13 @@ def read_csv(csv_route):
     #Diccionary where information will be stored
     csv_info = {}
 
+    # Open csv file in read mode
     with open(csv_route, 'r') as csvFile:
         reader = csv.reader(csvFile,delimiter=',')
         
         for row in reader:
+            # If the dictionary is empty store the first row of information.
+            # If not checks what IPs have the same MAC or the same O.S. to store in the csv
             if csv_info == {}:
                 csv_info[row[0]] = {'MAC':{row[1]:[row[3]]},'name':row[2],'OS':[row[3]],'processor':row[4],'ram':row[5],'disk':row[6]}
             else:

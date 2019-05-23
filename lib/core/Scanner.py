@@ -85,7 +85,7 @@ class Scanner:
         # Executes the ping scanning and gets the information
         active_ips = self.nmap.scan(self.ip,arguments="-sP")
         
-        # Gets all the active IPs
+        # Get all the active IPs
         hosts = self.nmap.all_hosts()
         
         # Return the information and the active IPs
@@ -102,9 +102,9 @@ class Scanner:
             :rtype: list
         """
         
-        # Executes snmp port scanning and gets the information
+        # Execute snmp port scanning and get the information
         snmp_scanning = self.nmap.scan(host, arguments="-sU -p 161")
-        # Gets snmp scanning keys
+        # Get snmp scanning keys
         snmp_scanning_keys = snmp_scanning['scan'].keys()
         
         # Return the information and the keys
@@ -121,9 +121,9 @@ class Scanner:
             :rtype: list
         """
         
-        # Executes os scanning and gets the information
+        # Execute os scanning and gets the information
         scanning = self.nmap.scan(host,arguments="-O")
-        # Gets os  scanning keys
+        # Get os  scanning keys
         os_scanning_keys = scanning['scan'].keys()
         
         # Return the information and the keys
@@ -135,11 +135,11 @@ class Scanner:
         a network graph and a pdf file are created. All the obtain information will be printed in the terminal.
         """
 
-        # Gets the time when the scan starts
+        # Get the time when the scan starts
         self.start_time = datetime.now()
         # Diccionary where the information will be stored
         toret = {}
-        # Gets the route where csv file must be stored
+        # Get the route where csv file must be stored
         csv_name = self.__output_csv_name()
         # csv file is open in write mode
         output = open(csv_name,'wb')
@@ -153,7 +153,7 @@ class Scanner:
         for host in hosts:
             print('Scanning ' + host + '...')
 
-            # Gets all network addresses
+            # Get all network addresses
             addresses_keys = active_ips['scan'][host]['addresses'].keys()
 
             # Snmp port scanning is done and its information is recovered
@@ -508,7 +508,7 @@ class Scanner:
                         print(">Tamanho total disco (GB): " + toret[host]['disk'])
                         print("\n")
                         
-                        # Writes a new row into csv file with the information of the IP scanned
+                        # Writes a new row into csv file with the information of the scanned IP
                         output_file.writerow([host,toret[host]['MAC'],toret[host]['name'],toret[host]['OS'],toret[host]['processor'],toret[host]['ram'],toret[host]['disk']])
 
                 # Close the csv file
@@ -609,7 +609,7 @@ class Scanner:
                     print(">Tamanho total disco (GB): " + toret[host]['disk'])
                     print("\n")
                     
-                    # Writes a new row into csv file with the information of the IP scanned
+                    # Writes a new row into csv file with the information of the scanned IP
                     output_file.writerow([host,toret[host]['MAC'],toret[host]['name'],toret[host]['OS'],toret[host]['processor'],toret[host]['ram'],toret[host]['disk']])
                 
                 #Close the csv file
@@ -702,6 +702,8 @@ class Scanner:
                 mac_info_keys = info['MAC'].keys()
                 
                 for mac in mac_info_keys:
+                    # If mac is in mac_ips dictionary, add new IPs with their O.S. into the corresponding mac key
+                    # If not creates a new key with the mac and store its IPs with their O.S.
                     if mac in mac_ips_keys:
                         for os_mac in info['MAC'][mac]:
                             mac_ips[mac]['IP'][ip].append(os_mac)
@@ -713,6 +715,7 @@ class Scanner:
         
         mac_ips_keys = mac_ips.keys()
         
+        # For each mac, show the mac with their IPs
         for key in mac_ips_keys:
             values = mac_ips[key]['IP'].keys()
             
@@ -721,6 +724,7 @@ class Scanner:
                 print('***** MAC ' + key + ' *****')
                 print('>IP: ' + values[i])
 
+        # Return mac_ips dictionary
         return mac_ips
     
     def __build_graph(self,mac_ips):
@@ -758,8 +762,10 @@ class Scanner:
         G.add_node('localhost')
 
         for mac in macs:
+            # For each mac gets all IPs
             ips_keys = mac_ips[mac]['IP'].keys()
 
+            # If IPs are different than local ip adds MAC nodes and edges between MACs and loclahost
             if local_ip not in ips_keys:
                 mac_nodes.append(mac)
                 G.add_node(mac)
@@ -769,6 +775,8 @@ class Scanner:
             ips = []
             
             for ip in ips_keys:
+                # For each recovered IP checks if is different than local. Then check what type of device is each IP
+                # and add it to the corresponding list
                 if ip != local_ip:
                     os_information = mac_ips[mac]['IP'][ip]
                     
@@ -808,9 +816,11 @@ class Scanner:
                                 router.append(ip)
                             else:
                                 others.append(ip)
-                
+            
+            # Add IPs as nodes
             G.add_nodes_from(ips)
             
+            #Add edges between IPs and their MAC
             for ip in ips:
                 G.add_edge(mac,ip,weight=1,length=4)
                 second_edges.append((mac,ip))

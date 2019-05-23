@@ -22,7 +22,7 @@ class ConfigurationLoader:
         for util in utils:
             # If util is not find, print an error message. If util is find, print a message.
             if spawn.find_executable(util) is None:
-                print('ATENTION! ' + util + ' is not installed on your operating system. You need to install it and then run the application again')
+                print('ATENTION: ' + util + ' is not installed on your operating system. You need to install it and then run the application again')
             else:
                 print(util + ' is installed')
                 
@@ -32,11 +32,11 @@ class ConfigurationLoader:
         """
         
         # Needed pip utils
-        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib','reportlab']
+        pip_utils = ['python-nmap','pysnmp','netifaces','schedule','networkx','matplotlib','reportlab','configparser']
         
-        # Gets the installed utils
+        # Get the installed utils
         installed_utils = get_pip_installations()
-        # Gets a sorted list with the pip utils
+        # Get a sorted list with the pip utils
         installed_utils_list = sorted(['%s' % i.key for i in installed_utils])
         
         for util in pip_utils:
@@ -53,7 +53,7 @@ class ConfigurationLoader:
                 if answer in ['y','Y']:
                     self.__install_util(util)
                 else:
-                    print(util + 'needs tobe installed to run the application. Execute pip install ' + util + ' and then run the script again.')
+                    print('ATENTION: ' + util + 'needs tobe installed to run the application. Execute pip install ' + util + ' and then run the script again.')
             else:
                 print('Found ' + util + ' package')
                 
@@ -71,7 +71,7 @@ class ConfigurationLoader:
             else:
                 pip._internal.main(['install',util])
         except Exception as e:
-            print('An error has been occured installing ' + util + '. Pleaser install it manually.')
+            print('ATENTION: An error has been occured installing ' + util + '. Pleaser install it manually.')
             
         print(util + 'was installed succesfully. Please run again the application.')
         exit()

@@ -1,25 +1,16 @@
-#Importar librerias
+
 import sys
 import schedule
 import time
+import os
+import ctypes
 
-#Importar modulos de terceros
 from datetime import datetime
 
-#Importar modulos propios
-from tests.tester import *
 from lib.core.ConfigurationLoader import *
 from lib.core.Scanner import *
 from lib.helpers.ip_helper import *
 from lib.helpers.outputs_helper import *
-
-#Definir constantes
-
-#Definir variables globales
-
-#Definir clases
-
-#Definir funciones
 
 def banner():
     """
@@ -49,7 +40,12 @@ def main():
     """
 
     # Check if the application is being executed like root user
-    if not check_root_mode():
+    try:
+        is_root = os.getuid() == 0
+    except AttributeError:
+        is_root = ctypes.windll.shell32.IsUserAnAdmin() != 0
+
+    if not is_root:
         print('ATENTION: You must run the script like root user!')
         sys.exit(1)
 
@@ -87,7 +83,7 @@ def main():
     print('')
 
     if op == '1':
-        # Gets the network IP with its mask and the associated interface
+        # Get the network IP with its mask and the associated interface
         print('Choose the interface that has the IP belonging to the network which you want to analyze')
         print('')
         ipmask_interface = getIpMascByInterface()
@@ -108,6 +104,7 @@ def main():
         print('')
         print('')
 
+        # Get the directory where output files must be stored
         directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
         while directory_name == '':
             directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
@@ -116,6 +113,7 @@ def main():
 
         print('')
 
+        # Get the name of the output csv file and output network graph
         output_files_name = raw_input('Insert the name of output files: ')
         while output_files_name == '':
             output_files_name = raw_input('Insert the name of output files: ')
@@ -123,6 +121,7 @@ def main():
         print('')
         print('')
 
+        # Get the interval that separate the scans
         interval = raw_input('How often do you want to run the script? (Minutes): ')
         try:
             interval = int(interval)
@@ -134,6 +133,7 @@ def main():
 
         print('')
 
+        # Get the number of times that scan must be executed
         times = raw_input('Insert the number of times that you want to run the script: ')
         try:
             times = int(times)
@@ -160,7 +160,7 @@ def main():
             time.sleep(1)
 
     elif op == '2':
-        # Gets the network IP with its mask and the associated interface
+        # Get the network IP with its mask and the associated interface
         print('Choose the interface that has the IP belonging to the network which you want to analyze')
         print('')
         ipmask_interface = getIpMascByInterface()
@@ -181,6 +181,7 @@ def main():
         print('')
         print('')
 
+        # Get the directory where output files must be stored
         directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
         while directory_name == '':
             directory_name = raw_input('Insert the name of the directory where you want to store output files: ')
@@ -189,6 +190,7 @@ def main():
 
         print('')
 
+        # Get the name of the output csv file and output network graph
         output_files_name = raw_input('Insert the name of output files: ')
         while output_files_name == '':
             output_files_name = raw_input('Insert the name of output files: ')
@@ -204,6 +206,7 @@ def main():
     else:
         print('')
 
+        # Get the name of the directory where csv file is stored
         directory_name = raw_input('Insert the name of the folder where csv file is stored: ')
         while directory_name == '':
             directory_name = raw_input('Insert the name of the folder where csv file is stored: ')
@@ -212,6 +215,7 @@ def main():
 
         print('')
 
+        # Get the name of the csv file
         file_name = raw_input('Insert the name of the csv file: ')
         while file_name == '':
             file_name = raw_input('Insert the name of the csv file: ')

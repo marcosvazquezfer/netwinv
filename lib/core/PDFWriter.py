@@ -14,7 +14,8 @@ from reportlab.lib.units import inch, cm
 
 
 class PDFExportError(Exception):
-    """ Custom Exception for the PDFWriter class
+    """ 
+    Custom Exception for the PDFWriter class
     """
 
     def __init__(self, msg):
@@ -22,7 +23,8 @@ class PDFExportError(Exception):
 
 
 class PDFWriter:
-    """ Outputs a PDF file containing all the information gathered from a phase of the TFG ESEI 2018-19 tool.
+    """ 
+    Outputs a PDF file containing all the information gathered from a phase of the TFG ESEI 2018-19 tool.
 
     This class uses the pdf.ini config file for easier and flexible output depending on the information to export.
     This this file must be filled in order to let the PDFWriter instance know what to write in the document.
@@ -69,7 +71,8 @@ class PDFWriter:
 
     @staticmethod
     def add_default_styles():
-        """ Loads the styles needed to export the PDF document to the class static variable STYLES.
+        """ 
+        Loads the styles needed to export the PDF document to the class static variable STYLES.
         """
         # File title font
         PDFWriter.STYLES.add(ParagraphStyle(name='cover_header', alignment=TA_CENTER, fontsize=30,
@@ -86,7 +89,8 @@ class PDFWriter:
         PDFWriter.STYLES.add(ParagraphStyle(name='body_justify', alignment=TA_JUSTIFY, fontsize=8))
 
     def __build_file_name(self):
-        """ Creates the file name from the file output directory, the file title and the current date.
+        """ 
+        Creates the file name from the file output directory, the file title and the current date.
 
             :returns: File name from the PDF document.
             :rtype: str
@@ -113,7 +117,8 @@ class PDFWriter:
         #return self.__output_directory if not self.__output_directory.endswith('/') else self.__output_directory[:-1] + '/' + title + '.pdf'
 
     def append_info(self, single_data, table_data, headers_list, col_widths=None):
-        """Appends data to the PDF document structure.
+        """
+        Appends data to the PDF document structure.
 
         All the PDFs created will have a cover, an introduction text and the information gathered. This infirmation
         is divided in sections, each section per target. This methods has to be called for eery section.

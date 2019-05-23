@@ -28,7 +28,10 @@ def no_periodic_scan_check_folder(folder_name):
             # Callback to check if the new introduced folder exists
             return no_periodic_scan_check_folder(folder_name)
     else:
-        os.mkdir('data/' + folder_name, 777)
+        # Create output folder with read/write permissions by everyone
+        os.mkdir('data/' + folder_name)
+        os.chmod('data/' + folder_name,0o777)
+
         return folder_name
 
 def periodic_scan_check_folder(folder_name):
@@ -51,7 +54,10 @@ def periodic_scan_check_folder(folder_name):
         # Callback to check if the folder exists
         return periodic_scan_check_folder(folder_name)
     else:
+        # Create output folder with read/write permissions by everyone
         os.mkdir('data/' + folder_name)
+        os.chmod('data/' + folder_name,0o777)
+        
         return folder_name
 
 def check_if_folder_exists(folder_name):
