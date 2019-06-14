@@ -706,6 +706,8 @@ class Scanner:
                     # If mac is in mac_ips dictionary, add new IPs with their O.S. into the corresponding mac key
                     # If not creates a new key with the mac and store its IPs with their O.S.
                     if mac in mac_ips_keys:
+                        mac_ips[mac]['IP'][ip] = []
+                        
                         for os_mac in info['MAC'][mac]:
                             mac_ips[mac]['IP'][ip].append(os_mac)
                     else:
